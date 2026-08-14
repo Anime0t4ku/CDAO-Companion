@@ -1,15 +1,11 @@
-# Source provenance
+# Source
 
-Published binaries are based on:
+This repository builds cdrdao from the upstream release recorded in:
 
-- Repository: https://github.com/cdrdao/cdrdao
-- Version: 1.2.6
-- Tag: `rel_1_2_6`
+- `UPSTREAM_VERSION`
+- `UPSTREAM_TAG`
 
-Unix builds use the pinned upstream source directly.
+Original project: https://github.com/cdrdao/cdrdao
 
-Native Windows builds apply the small compatibility changes in
-`scripts/apply-windows-portability.py`. See `patches/README.md`.
-
-For GPL corresponding-source purposes, use the exact upstream tag together
-with the patcher from the matching release of this repository.
+The Linux and macOS packages are built from the pinned upstream source.
+Windows binaries are not built by this repository.

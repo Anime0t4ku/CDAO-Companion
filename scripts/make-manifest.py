@@ -12,8 +12,6 @@ version = (root / "UPSTREAM_VERSION").read_text(encoding="utf-8").strip()
 tag = (root / "UPSTREAM_TAG").read_text(encoding="utf-8").strip()
 
 platforms = {
-    "windows-x64": {"os": "windows", "arch": "x64"},
-    "windows-arm64": {"os": "windows", "arch": "arm64"},
     "linux-x64": {"os": "linux", "arch": "x64"},
     "linux-arm64": {"os": "linux", "arch": "arm64"},
     "macos-x64": {"os": "macos", "arch": "x64"},
