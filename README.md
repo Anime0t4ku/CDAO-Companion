@@ -30,26 +30,6 @@ Each archive contains only the pieces MiSTer Companion needs:
 
 The builds intentionally disable cdrdao's optional GUI and compressed-audio helpers. MiSTer Companion only needs CD reading/writing and TOC/CUE conversion.
 
-## Build
-
-Run **Build cdrdao** from the Actions tab, or push a tag such as:
-
-```text
-cdrdao-1.2.6-1
-```
-
-A tag creates a GitHub Release with platform archives, SHA-256 checksums, and `manifest.json`.
-
-## Updating upstream
-
-1. Change `UPSTREAM_VERSION`.
-2. Change `UPSTREAM_TAG` to the matching cdrdao tag.
-3. Run the workflow manually.
-4. Test every produced binary in MiSTer Companion.
-5. Create a release tag only after validation.
-
-No upstream source patches should be added here unless they are strictly required. If a platform fix becomes necessary, keep it as a small patch under `patches/`, document why it exists, and submit it upstream where practical.
-
 ## Licensing
 
 cdrdao is GPL-2.0 licensed upstream. This repository redistributes cdrdao binaries together with the applicable upstream license and source reference. The build/release scripts in this repository are also provided under GPL-2.0.
