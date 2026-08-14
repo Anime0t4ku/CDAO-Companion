@@ -8,12 +8,14 @@ on:
     paths:
       - ".github/workflows/build.yml"
       - "scripts/**"
+      - "patches/**"
       - "UPSTREAM_VERSION"
       - "UPSTREAM_TAG"
   pull_request:
     paths:
       - ".github/workflows/build.yml"
       - "scripts/**"
+      - "patches/**"
       - "UPSTREAM_VERSION"
       - "UPSTREAM_TAG"
 
@@ -45,7 +47,7 @@ jobs:
         if: startsWith(matrix.target, 'linux-')
         run: |
           sudo apt-get update
-          sudo apt-get install -y             autoconf automake libtool pkg-config             build-essential git
+          sudo apt-get install -y autoconf automake libtool pkg-config build-essential git
 
       - name: Install macOS build dependencies
         if: startsWith(matrix.target, 'macos-')
@@ -55,12 +57,12 @@ jobs:
       - name: Build
         env:
           TARGET_NAME: ${{ matrix.target }}
-        run: ./scripts/build-unix.sh
+        run: bash scripts/build-unix.sh
 
       - name: Package
         env:
           TARGET_NAME: ${{ matrix.target }}
-        run: ./scripts/package.sh
+        run: bash scripts/package.sh
 
       - uses: actions/upload-artifact@v6
         with:
@@ -95,13 +97,13 @@ jobs:
         env:
           TARGET_NAME: windows-x64
           HOST_TRIPLET: x86_64-w64-mingw32
-        run: ./scripts/build-windows.sh
+        run: bash scripts/build-windows.sh
 
       - name: Package
         shell: msys2 {0}
         env:
           TARGET_NAME: windows-x64
-        run: ./scripts/package.sh
+        run: bash scripts/package.sh
 
       - uses: actions/upload-artifact@v6
         with:
@@ -141,7 +143,7 @@ jobs:
           HOST_TRIPLET: aarch64-w64-mingw32
           CC: clang
           CXX: clang++
-        run: ./scripts/build-windows.sh
+        run: bash scripts/build-windows.sh
 
       - name: Verify PE architecture
         shell: msys2 {0}
@@ -154,7 +156,7 @@ jobs:
         shell: msys2 {0}
         env:
           TARGET_NAME: windows-arm64
-        run: ./scripts/package.sh
+        run: bash scripts/package.sh
 
       - uses: actions/upload-artifact@v6
         with:

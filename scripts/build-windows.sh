@@ -21,6 +21,8 @@ git clone --depth 1 --branch "$TAG" https://github.com/cdrdao/cdrdao.git "$SRC"
 
 cd "$SRC"
 
+python "$ROOT/scripts/apply-windows-portability.py" "$SRC"
+
 if [[ ! -f configure ]]; then
     ./autogen.sh
 fi
