@@ -1,4 +1,3 @@
-\
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -70,7 +69,7 @@ copy_runtime_dlls "$STAGE/bin/cue2toc.exe"
 
 cp "$SRC/COPYING" "$STAGE/licenses/cdrdao-COPYING"
 cp "$SRC/AUTHORS" "$STAGE/licenses/cdrdao-AUTHORS"
-cp "$SRC/README.md" "$STAGE/licenses/cdrdao-README.md"
+cp "$SRC/README" "$STAGE/licenses/cdrdao-README"
 printf '%s\n' "$VERSION" > "$STAGE/VERSION"
 
 # Native smoke test. The ARM64 workflow runs on a native Windows ARM64 runner.

@@ -25,10 +25,11 @@ replace_once(
 
 dnl MiSTer Companion native Windows builds omit the legacy POSIX CDDB client.
 case "$host" in
-  *mingw*) companion_cddb_source="" ;;
-  *)       companion_cddb_source="Cddb.cc" ;;
+  *mingw*) companion_build_cddb=no ;;
+  *)       companion_build_cddb=yes ;;
 esac
-AC_SUBST(companion_cddb_source)
+AM_CONDITIONAL([COMPANION_BUILD_CDDB],
+               [test "x$companion_build_cddb" = "xyes"])
 '''
 )
 
@@ -36,8 +37,24 @@ mk = src / "trackdb" / "Makefile.am"
 replace_once(
     mk,
     'libtrackdb_a_SOURCES = \\\n\tCddb.cc\t\t\t\\\n\tlec.cc',
-    'libtrackdb_a_SOURCES = \\\n\t@companion_cddb_source@\t\\\n\tlec.cc'
+    'libtrackdb_a_SOURCES = \\\n\tlec.cc'
 )
+
+makefile_text = mk.read_text(encoding="utf-8")
+anchor = 'AM_CXXFLAGS = @AO_CFLAGS@\n'
+if anchor not in makefile_text:
+    raise SystemExit("Could not locate Automake conditional insertion point")
+makefile_text = makefile_text.replace(
+    anchor,
+    '''AM_CXXFLAGS = @AO_CFLAGS@
+
+if COMPANION_BUILD_CDDB
+libtrackdb_a_SOURCES += Cddb.cc
+endif
+''',
+    1,
+)
+mk.write_text(makefile_text, encoding="utf-8", newline="\\n")
 
 main = src / "dao" / "main.cc"
 replace_once(

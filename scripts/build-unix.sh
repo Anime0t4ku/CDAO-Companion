@@ -1,4 +1,3 @@
-\
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -49,7 +48,7 @@ done
 
 cp "$SRC/COPYING" "$STAGE/licenses/cdrdao-COPYING"
 cp "$SRC/AUTHORS" "$STAGE/licenses/cdrdao-AUTHORS"
-cp "$SRC/README.md" "$STAGE/licenses/cdrdao-README.md"
+cp "$SRC/README" "$STAGE/licenses/cdrdao-README"
 printf '%s\n' "$VERSION" > "$STAGE/VERSION"
 
 # Smoke tests that do not require an optical drive.
