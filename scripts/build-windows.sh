@@ -20,7 +20,7 @@ git clone --depth 1 --branch "$TAG" https://github.com/cdrdao/cdrdao.git "$SRC"
 
 cd "$SRC"
 
-python "$ROOT/scripts/apply-windows-portability.py" "$SRC"
+python3 "$ROOT/scripts/apply-windows-portability.py" "$SRC"
 
 if [[ ! -f configure ]]; then
     ./autogen.sh
@@ -31,8 +31,7 @@ fi
     --prefix="$PREFIX" \
     --without-gcdmaster \
     --without-ogg-support \
-    --without-mp3-support \
-    --without-flac-support
+    --without-mp3-support
 
 make -j"${NUMBER_OF_PROCESSORS:-2}"
 make install

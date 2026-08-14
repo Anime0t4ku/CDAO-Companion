@@ -88,6 +88,7 @@ jobs:
             libtool
             make
             git
+            python
           pacboy: >-
             toolchain:p
             libiconv:p
@@ -129,6 +130,7 @@ jobs:
             libtool
             make
             git
+            python
             mingw-w64-clang-aarch64-clang
             mingw-w64-clang-aarch64-libc++
             mingw-w64-clang-aarch64-lld

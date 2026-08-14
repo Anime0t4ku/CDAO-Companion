@@ -51,7 +51,7 @@ jobs:
         with:
           msystem: UCRT64
           update: true
-          install: autoconf automake libtool make git
+          install: autoconf automake libtool make git python
           pacboy: toolchain:p libiconv:p
       - shell: msys2 {0}
         env:
@@ -78,7 +78,7 @@ jobs:
           msystem: CLANGARM64
           update: true
           install: >-
-            autoconf automake libtool make git
+            autoconf automake libtool make git python
             mingw-w64-clang-aarch64-clang
             mingw-w64-clang-aarch64-libc++
             mingw-w64-clang-aarch64-lld

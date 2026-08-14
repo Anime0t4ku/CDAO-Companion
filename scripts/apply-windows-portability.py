@@ -54,7 +54,7 @@ endif
 ''',
     1,
 )
-mk.write_text(makefile_text, encoding="utf-8", newline="\\n")
+mk.write_text(makefile_text, encoding="utf-8", newline="\n")
 
 main = src / "dao" / "main.cc"
 replace_once(

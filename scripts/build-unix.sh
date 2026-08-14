@@ -30,8 +30,7 @@ fi
     --prefix="$PREFIX" \
     --without-gcdmaster \
     --without-ogg-support \
-    --without-mp3-support \
-    --without-flac-support
+    --without-mp3-support
 
 make -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu)"
 make install
