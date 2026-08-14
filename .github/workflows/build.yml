@@ -5,19 +5,7 @@ on:
   push:
     branches:
       - main
-    paths:
-      - ".github/workflows/build.yml"
-      - ".github/workflows/reusable-build.yml"
-      - "scripts/**"
-      - "UPSTREAM_VERSION"
-      - "UPSTREAM_TAG"
   pull_request:
-    paths:
-      - ".github/workflows/build.yml"
-      - ".github/workflows/reusable-build.yml"
-      - "scripts/**"
-      - "UPSTREAM_VERSION"
-      - "UPSTREAM_TAG"
 
 permissions:
   contents: read
@@ -65,6 +53,56 @@ jobs:
 
       - uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.target }}
+          name: cdrdao-${{ matrix.target }}
           path: dist/*
           if-no-files-found: error
+
+  publish:
+    name: Publish release
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: cdrdao-*
+          path: dist
+          merge-multiple: true
+
+      - name: Build manifest and checksums
+        run: python3 scripts/make-manifest.py
+
+      - name: Verify release assets
+        run: |
+          test -f "dist/cdrdao-$(cat UPSTREAM_VERSION)-linux-x64.tar.gz"
+          test -f "dist/cdrdao-$(cat UPSTREAM_VERSION)-linux-arm64.tar.gz"
+          test -f "dist/cdrdao-$(cat UPSTREAM_VERSION)-macos-x64.tar.gz"
+          test -f "dist/cdrdao-$(cat UPSTREAM_VERSION)-macos-arm64.tar.gz"
+          test -f dist/manifest.json
+          test -f dist/SHA256SUMS
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="$(cat UPSTREAM_VERSION)"
+          TAG="cdrdao-${VERSION}"
+          TITLE="cdrdao ${VERSION} for MiSTer Companion"
+          NOTES="cdrdao ${VERSION} builds for MiSTer Companion on Linux and macOS."
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --title "$TITLE" --notes "$NOTES"
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "$TITLE" \
+              --notes "$NOTES" \
+              dist/*
+          fi

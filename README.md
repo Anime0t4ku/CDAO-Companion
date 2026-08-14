@@ -11,3 +11,5 @@ Windows uses the official upstream Windows build instead.
 
 cdrdao is originally developed by the **cdrdao project** and is licensed under **GPL-2.0**.  
 See [LICENSE](LICENSE) and the [original project](https://github.com/cdrdao/cdrdao) for license and source information.
+
+GitHub Actions automatically builds and publishes the Linux and macOS binaries on every successful push to `main`.
