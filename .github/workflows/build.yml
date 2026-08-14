@@ -1,0 +1,163 @@
+name: Build cdrdao
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build.yml"
+      - "scripts/**"
+      - "UPSTREAM_VERSION"
+      - "UPSTREAM_TAG"
+  pull_request:
+    paths:
+      - ".github/workflows/build.yml"
+      - "scripts/**"
+      - "UPSTREAM_VERSION"
+      - "UPSTREAM_TAG"
+
+permissions:
+  contents: read
+
+jobs:
+  unix:
+    name: ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x64
+            runner: ubuntu-22.04
+          - target: linux-arm64
+            runner: ubuntu-22.04-arm
+          - target: macos-x64
+            runner: macos-15-intel
+          - target: macos-arm64
+            runner: macos-14
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Linux build dependencies
+        if: startsWith(matrix.target, 'linux-')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y             autoconf automake libtool pkg-config             build-essential git
+
+      - name: Install macOS build dependencies
+        if: startsWith(matrix.target, 'macos-')
+        run: |
+          brew install autoconf automake libtool pkg-config
+
+      - name: Build
+        env:
+          TARGET_NAME: ${{ matrix.target }}
+        run: ./scripts/build-unix.sh
+
+      - name: Package
+        env:
+          TARGET_NAME: ${{ matrix.target }}
+        run: ./scripts/package.sh
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: ${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+
+  windows-x64:
+    name: windows-x64
+    runs-on: windows-2025
+
+    steps:
+      - run: git config --global core.autocrlf input
+      - uses: actions/checkout@v6
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            autoconf
+            automake
+            libtool
+            make
+            git
+          pacboy: >-
+            toolchain:p
+            libiconv:p
+
+      - name: Build
+        shell: msys2 {0}
+        env:
+          TARGET_NAME: windows-x64
+          HOST_TRIPLET: x86_64-w64-mingw32
+        run: ./scripts/build-windows.sh
+
+      - name: Package
+        shell: msys2 {0}
+        env:
+          TARGET_NAME: windows-x64
+        run: ./scripts/package.sh
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: windows-x64
+          path: dist/*
+          if-no-files-found: error
+
+  windows-arm64:
+    name: windows-arm64
+    runs-on: windows-11-arm
+
+    steps:
+      - run: git config --global core.autocrlf input
+      - uses: actions/checkout@v6
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANGARM64
+          update: true
+          install: >-
+            autoconf
+            automake
+            libtool
+            make
+            git
+            mingw-w64-clang-aarch64-clang
+            mingw-w64-clang-aarch64-libc++
+            mingw-w64-clang-aarch64-lld
+            mingw-w64-clang-aarch64-make
+            mingw-w64-clang-aarch64-pkgconf
+            mingw-w64-clang-aarch64-libiconv
+
+      - name: Build
+        shell: msys2 {0}
+        env:
+          TARGET_NAME: windows-arm64
+          HOST_TRIPLET: aarch64-w64-mingw32
+          CC: clang
+          CXX: clang++
+        run: ./scripts/build-windows.sh
+
+      - name: Verify PE architecture
+        shell: msys2 {0}
+        run: |
+          file stage/windows-arm64/bin/cdrdao.exe
+          file stage/windows-arm64/bin/toc2cue.exe
+          file stage/windows-arm64/bin/cue2toc.exe
+
+      - name: Package
+        shell: msys2 {0}
+        env:
+          TARGET_NAME: windows-arm64
+        run: ./scripts/package.sh
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: windows-arm64
+          path: dist/*
+          if-no-files-found: error
